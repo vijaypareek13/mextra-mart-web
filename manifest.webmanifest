@@ -1,0 +1,12 @@
+{
+  "name": "Mextra Mart",
+  "short_name": "Mextra Mart",
+  "description": "Everything you need under one roof. Groceries delivered in minutes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1B3A",
+  "theme_color": "#0B1B3A",
+  "icons": [
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
