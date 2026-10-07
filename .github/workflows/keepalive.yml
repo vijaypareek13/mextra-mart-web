@@ -1,0 +1,32 @@
+# Keeps the Supabase project awake.
+#
+# A free Supabase project pauses after about a week with no traffic, and then every
+# request answers "Project paused" — the app and the website look broken, and a Play
+# reviewer opening it would reject the app. This asks the catalogue for one row each
+# morning, which is enough to count as activity.
+#
+# It runs on GitHub's machines, so it does not need anyone's computer to be switched on.
+# The key below is the public anon key; it is already inside the website's own JavaScript,
+# and row level security is what guards the data. Nothing secret is here.
+
+name: Keep the shop awake
+
+on:
+  schedule:
+    - cron: "17 3 * * *"      # 08:47 IST daily
+  workflow_dispatch:           # and a button, for when it is needed right now
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the catalogue for one row
+        run: |
+          URL="https://rpuiqhsyfhlhstdxvwts.supabase.co/rest/v1/products?select=id&limit=1"
+          KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwdWlxaHN5ZmhsaHN0ZHh2d3RzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3ODA0MDIsImV4cCI6MjEwNDM1NjQwMn0.UfrInNxzcB1vNbs9YIySbTfuJbXMuuAebRZt1EhPu0s"
+          CODE=$(curl -s -o /tmp/out -w "%{http_code}" "$URL" -H "apikey: $KEY")
+          echo "HTTP $CODE"
+          cat /tmp/out
+          # 200 is awake. Anything else — a pause answers 540 — fails the run, so the
+          # failure shows up in GitHub's Actions tab and in the usual email.
+          test "$CODE" = "200"
